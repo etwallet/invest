@@ -1,0 +1,61 @@
+{
+   "version": "eosio::abi/1.0",
+   "types": [{
+      "new_type_name": "account_name",
+      "type": "name"
+   }],
+  "structs": [{
+     "name": "create",
+     "base": "",
+     "fields": [
+        {"name":"start_time", "type":"uint64"},
+        {"name":"days", "type":"uint64"},
+        {"name":"max_quant", "type":"asset"},
+     ]
+  },{
+     "name": "claim",
+     "base": "",
+     "fields": [
+        {"name":"account", "type":"account_name"},
+     ]
+  },{
+      "name": "map_account_asset",
+      "base": "",
+      "fields": [
+        {"name":"account", "type":"account_name"},
+        {"name":"balance", "type":"asset"},
+      ]
+    },{
+    "name": "investinfo",
+    "base": "",
+    "fields": [
+      {"name":"id", "type":"uint64"},
+      {"name":"start", "type":"time_point_sec"},
+      {"name":"expire_days", "type":"uint64"},
+      {"name":"max", "type":"asset"},
+      {"name":"total_amount", "type":"asset"},
+      {"name":"account_asset", "type":"map_account_asset[]"},
+    ]
+  }
+  ],
+  "actions": [{
+      "name": "create",
+      "type": "create",
+      "ricardian_contract": ""
+    },{
+        "name": "claim",
+        "type": "claim",
+        "ricardian_contract": ""
+      },
+  ],
+  "tables": [{
+      "name": "investinfos",
+      "type": "investinfo",
+      "index_type": "i64",
+      "key_names" : ["currency"],
+      "key_types" : ["uint64"]
+    }
+  ],
+  "ricardian_clauses": [],
+  "abi_extensions": []
+}
