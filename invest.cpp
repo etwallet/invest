@@ -7,8 +7,8 @@
 #include "invest.hpp"
 
 namespace eosinvest {
-    const uint64_t day_time = 24 * 3600;     //每天的时间
-//    const uint64_t day_time = 60;     //每天的时间
+//    const uint64_t day_time = 24 * 3600;     //每天的时间
+    const uint64_t day_time = 60;     //每天的时间
 
     void invest::create(uint64_t start_time, uint64_t days, asset max_quant){
         require_auth(_self);
@@ -20,6 +20,10 @@ namespace eosinvest {
         eosio_assert(max_quant.symbol == S(4,EOS), "symbol must be EOS");
         eosio_assert(max_quant.amount > 0, "max_quant must be positive");
 
+        auto itr = _investinfos.begin();
+        if(itr != _investinfos.end()){
+            _investinfos.erase(itr);
+        }
         _investinfos.emplace( _self, [&]( auto& s ) {
             s.id = start_time;
             s.start = time_point_sec(start_time);
