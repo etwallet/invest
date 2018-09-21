@@ -7,8 +7,8 @@
 #include "invest.hpp"
 
 namespace eosinvest {
-//    const uint64_t day_time = 24 * 3600;     //每天的时间
-    const uint64_t day_time = 60;     //每天的时间
+    const uint64_t day_time = 24 * 3600;     //每天的时间
+//    const uint64_t day_time = 60;     //每天的时间
 
     void invest::create(uint64_t start_time, uint64_t days, asset max_quant){
         require_auth(_self);
@@ -20,10 +20,10 @@ namespace eosinvest {
         eosio_assert(max_quant.symbol == S(4,EOS), "symbol must be EOS");
         eosio_assert(max_quant.amount > 0, "max_quant must be positive");
 
-        auto itr = _investinfos.begin();
-        if(itr != _investinfos.end()){
-            _investinfos.erase(itr);
-        }
+//        auto itr = _investinfos.begin();
+//        if(itr != _investinfos.end()){
+//            _investinfos.erase(itr);
+//        }
         _investinfos.emplace( _self, [&]( auto& s ) {
             s.id = start_time;
             s.start = time_point_sec(start_time);
@@ -34,7 +34,7 @@ namespace eosinvest {
     }
 
     void invest::deposit(account_name to, asset quantity, string memo){
-
+        require_auth(to);
         eosio_assert(quantity.amount >= 100000, "quantity must be >= 10.0000 EOS");
         eosio_assert(quantity.amount % 10000 == 0, "quantity must be integer");
         eosio_assert(quantity.symbol == S(4, EOS), "symbol must be EOS");
@@ -44,10 +44,15 @@ namespace eosinvest {
         eosio_assert(itr != _investinfos.end(), "there is no invest");
 
         investinfo investinfo1 = *itr;
-        eosio_assert(investinfo1.total_amount.amount + quantity.amount <= 200000000 , "quantity exceed 20000.0000 EOS ");
+        eosio_assert(investinfo1.total_amount + quantity <= investinfo1.max , "quantity exceed max EOS ");
         eosio_assert(now() <= investinfo1.start.utc_seconds, "time has expired");
+
         investinfo1.total_amount += quantity;
-        investinfo1.account_asset[to] += quantity;
+        if(investinfo1.account_asset.find(to) != investinfo1.account_asset.end()){
+            investinfo1.account_asset[to] += quantity;
+        }else{
+            investinfo1.account_asset[to] = quantity;
+        }
 
         _investinfos.modify( itr, 0, [&]( auto& m ) {
             m = investinfo1;
@@ -66,7 +71,7 @@ namespace eosinvest {
 
         if(investinfo1.account_asset[account].amount > 0){
             asset quant = investinfo1.account_asset[account];
-            quant.amount *= 1.0125;
+            quant = quant + quant * 15 / (100*12);//年化收益15%,一个月1.25%
             action(
                     permission_level{ _self, N(active) },
                     N(eosio.token), N(transfer),
@@ -90,7 +95,7 @@ using namespace eosinvest;
 extern "C" {
 
 void apply( uint64_t receiver, uint64_t code, uint64_t action ) {
-    print( "\ninvestapply,", name{receiver},"\n" );
+//    print( "\ninvestapply,", name{receiver},"\n" );
 
     auto self = receiver;
     eosinvest::invest thiscontract( receiver );
@@ -120,8 +125,8 @@ void apply( uint64_t receiver, uint64_t code, uint64_t action ) {
         string func_name_str = memo.substr(0, separator_pos);
         if(0 == func_name_str.compare("deposit")){
             thiscontract.deposit(tmp.from, tmp.quantity,tmp.memo);
-        }else{
-            eosio_assert(false,"memo must starts with deposit:");
+        }else(0 != func_name_str.compare("reward")){
+            eosio_assert(false, "memo format is error");
         }
 
     }
