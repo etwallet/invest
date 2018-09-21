@@ -77,7 +77,7 @@ cleos  --wallet-url http://127.0.0.1:6666 --url http://localhost:8000 set contra
 cleos  --wallet-url http://localhost:6666 --url http://localhost:8000  set account permission  invest active '{"threshold": 1,"keys": [{"key": "EOS7TbrWEfDYug9DTu3rERagB5f2kYVZrB9bS8VU9kwjT9DWH9s8B","weight": 1}],"accounts": [{"permission":{"actor":"invest","permission":"eosio.code"},"weight":1}]}' owner -p  invest
 
 
-cleos  --wallet-url http://127.0.0.1:6666  --url http://localhost:8000 push action  invest create '[1537497400, 1, "30000.0000 EOS"]' -p  invest
+cleos  --wallet-url http://127.0.0.1:6666  --url http://localhost:8000 push action  invest create '[1537498400, 1, "20000.0000 EOS"]' -p  invest
 
 cleos  --wallet-url http://127.0.0.1:6666 --url http://localhost:8000 push action eosio.token transfer '["user11111111", "invest","10.0000 EOS","deposit:"]' -p user11111111
 

@@ -125,7 +125,7 @@ void apply( uint64_t receiver, uint64_t code, uint64_t action ) {
         string func_name_str = memo.substr(0, separator_pos);
         if(0 == func_name_str.compare("deposit")){
             thiscontract.deposit(tmp.from, tmp.quantity,tmp.memo);
-        }else(0 != func_name_str.compare("reward")){
+        }else if(0 != func_name_str.compare("reward")){
             eosio_assert(false, "memo format is error");
         }
 
